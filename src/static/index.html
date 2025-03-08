@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Story Generator</title>
+    <style>
+        /* Add your CSS here */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <h1>User Story Generator</h1>
+        
+        <!-- File Upload -->
+        <div class="upload-section">
+            <h2>Upload Document</h2>
+            <div class="form-group">
+                <label for="documentUpload">Choose a document to process:</label>
+                <input type="file" 
+                       id="documentUpload" 
+                       accept=".docx,.pdf,.txt"
+                       aria-label="Upload document">
+                <button onclick="uploadDocument()">Process Document</button>
+            </div>
+        </div>
+
+        <!-- Template Creation -->
+        <div class="template-section">
+            <h2>Create Template</h2>
+            <div class="form-group">
+                <label for="templateEditor">Template Content:</label>
+                <textarea id="templateEditor" 
+                          rows="10" 
+                          cols="50"
+                          placeholder="Enter your template here..."
+                          aria-label="Template editor"></textarea>
+                <button onclick="saveTemplate()">Save Template</button>
+            </div>
+        </div>
+
+        <!-- Story Generation -->
+        <div class="story-section">
+            <h2>Generate Story</h2>
+            <div class="form-group">
+                <label for="templateSelect">Select Template:</label>
+                <select id="templateSelect" 
+                        aria-label="Select template">
+                </select>
+                <button onclick="generateStory()">Generate</button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="results" role="region" aria-label="Generated Results"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000';
+        
+        async function uploadDocument() {
+            const fileInput = document.getElementById('documentUpload');
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch(`${API_URL}/process-document`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                displayResults(result);
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        async function saveTemplate() {
+            const template = document.getElementById('templateEditor').value;
+            try {
+                const response = await fetch(`${API_URL}/templates`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        template: template
+                    })
+                });
+                const result = await response.json();
+                alert('Template saved successfully');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function displayResults(results) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `<pre>${JSON.stringify(results, null, 2)}</pre>`;
+        }
+    </script>
+</body>
+</html>
