@@ -1,25 +1,43 @@
 from docx import Document
-from docx.shared import Pt
-import markdown
 import os
+import logging
 
 class ExportService:
-    def __init__(self):
-        self.output_dir = "exports"
-        os.makedirs(self.output_dir, exist_ok=True)
-    
-    def export_to_docx(self, content: dict, filename: str) -> str:
+    def export_to_docx(self, content, filename):
+        # Get the absolute path to the project root
+        project_root = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+        exports_dir = os.path.join(project_root, 'exports')
+        
+        # Create exports directory if it doesn't exist
+        os.makedirs(exports_dir, exist_ok=True)
+        
+        # Create absolute file path
+        file_path = os.path.join(exports_dir, f"{filename}.docx")
+        
+        # Log the path for debugging
+        logging.info(f"Saving DOCX to: {file_path}")
+        
+        # Create a new Document
         doc = Document()
         
-        # Add title
-        title = doc.add_heading(content['title'], 0)
+        # Add content to the document
+        doc.add_heading('User Story', 0)
         
-        # Add sections
-        for section in content['sections']:
-            heading = doc.add_heading(section['heading'], level=1)
-            doc.add_paragraph(section['content'])
+        doc.add_heading('Role', level=1)
+        doc.add_paragraph(content['role'])
         
-        # Save document
-        output_path = os.path.join(self.output_dir, f"{filename}.docx")
-        doc.save(output_path)
-        return output_path
+        doc.add_heading('Goal', level=1)
+        doc.add_paragraph(content['goal'])
+        
+        doc.add_heading('Benefit', level=1)
+        doc.add_paragraph(content['benefit'])
+        
+        doc.add_heading('Acceptance Criteria', level=1)
+        for criterion in content['acceptance_criteria']:
+            doc.add_paragraph(criterion, style='List Bullet')
+        
+        # Save the document
+        doc.save(file_path)
+        
+        print(f"File saved to: {file_path}")  # Console output for immediate feedback
+        return file_path

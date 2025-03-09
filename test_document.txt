@@ -1,0 +1,9 @@
+User Story Requirements:
+As a customer service representative
+I want to be able to view customer history
+So that I can provide better support
+
+Acceptance Criteria:
+- Can view past purchases
+- Can see support ticket history
+- Can access customer contact information

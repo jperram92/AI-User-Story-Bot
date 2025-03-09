@@ -1,0 +1,11 @@
+name: basic_user_story
+format_type: agile
+sections:
+  - user_role
+  - goal
+  - benefit
+required_fields:
+  - role
+  - action
+  - outcome
+business_context: customer_service
